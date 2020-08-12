@@ -25,6 +25,7 @@ import (
 	"github.com/prometheus/common/model"
 	yaml "gopkg.in/yaml.v3"
 
+	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/timestamp"
 	"github.com/prometheus/prometheus/promql/parser"
 	"github.com/prometheus/prometheus/template"
@@ -196,6 +197,13 @@ func (r *RuleNode) Validate() (nodes []WrappedError) {
 			nodes = append(nodes, WrappedError{
 				err: errors.Errorf("invalid label value: %s", v),
 			})
+		}
+		if k == labels.MetricName {
+			if !model.LabelName(v).IsValid() {
+				nodes = append(nodes, WrappedError{
+					err: errors.Errorf("invalid label name: %s", v),
+				})
+			}
 		}
 	}
 
